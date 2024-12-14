@@ -5,7 +5,7 @@ import { icons } from "@/constants";
 import { useState } from "react";
 import { View, Text, ScrollView, TouchableOpacity, Image, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import * as DocumentPicker from "expo-document-picker";
+import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import { createPost } from "@/lib/appwrite";
 import { useGlobalContext } from "@/context/GlobalContextProvider";
@@ -24,8 +24,8 @@ const Create = () => {
   const [form, setForm] = useState({ ...DEFAULT_FORM_STATE });
 
   const openPicker = async (fileType: string) => {
-    const result = await DocumentPicker.getDocumentAsync({
-      type: fileType === "image" ? ["image/png", "image/jpeg"] : ["video/mp4", "video/gif"],
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: [fileType === "image" ? "images" : "videos"],
     });
 
     if (!result.canceled && result.assets && result.assets.length > 0) {

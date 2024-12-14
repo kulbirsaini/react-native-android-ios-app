@@ -179,9 +179,12 @@ const uploadFile = async (file, type) => {
     return;
   }
 
-  const asset = { ...file, type: file.mimeType };
-
-  const result = await storage.createFile(appwriteConfig.storageId, ID.unique(), asset);
+  const result = await storage.createFile(appwriteConfig.storageId, ID.unique(), {
+    name: file.fileName,
+    type: file.mimeType,
+    size: file.fileSize,
+    uri: file.uri,
+  });
   return getFilePreview(result.$id, type);
 };
 
