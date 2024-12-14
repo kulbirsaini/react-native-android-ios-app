@@ -7,6 +7,7 @@ import CustomButton from "@/components/CustomButton";
 import { Link, router } from "expo-router";
 import { createUser } from "@/lib/appwrite";
 import { useGlobalContext } from "@/context/GlobalContextProvider";
+import LoadingIndicator from "@/components/LoadingIndicator";
 
 const Signup = () => {
   const [form, setForm] = useState({ username: "", email: "", password: "" });
@@ -41,6 +42,7 @@ const Signup = () => {
 
   return (
     <SafeAreaView className="bg-primary h-full">
+      {isSubmitting && <LoadingIndicator />}
       <ScrollView>
         <View className="w-full h-full justify-center px-4 my-6">
           <Image source={images.logo} resizeMode="contain" className="w-[115px] h-[35px]" />

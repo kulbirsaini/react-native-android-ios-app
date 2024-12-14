@@ -1,4 +1,5 @@
 import EmptyState from "@/components/EmptyState";
+import LoadingIndicator from "@/components/LoadingIndicator";
 import SearchInput from "@/components/SearchInput";
 import VideoCard from "@/components/VideoCard";
 import { images } from "@/constants";
@@ -8,6 +9,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect } from "react";
 import { View, Text, Image, FlatList, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import React from "react";
 
 const Search = () => {
   const { query } = useLocalSearchParams();
@@ -32,6 +34,7 @@ const Search = () => {
 
   return (
     <SafeAreaView className="bg-primary h-full w-full">
+      {isLoading && <LoadingIndicator />}
       <FlatList
         data={videos}
         keyExtractor={(item) => item.$id.toString()}
@@ -55,7 +58,9 @@ const Search = () => {
           </View>
         )}
         ListEmptyComponent={() => (
-          <EmptyState title="No videos found for this query!" subtitle="Be the first one to upload a video!" />
+          <>
+            {!isLoading && <EmptyState title="No videos found for this query!" subtitle="Be the first one to upload a video!" />}
+          </>
         )}
       />
     </SafeAreaView>

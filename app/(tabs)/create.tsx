@@ -9,6 +9,7 @@ import * as DocumentPicker from "expo-document-picker";
 import { router } from "expo-router";
 import { createPost } from "@/lib/appwrite";
 import { useGlobalContext } from "@/context/GlobalContextProvider";
+import LoadingIndicator from "@/components/LoadingIndicator";
 
 const DEFAULT_FORM_STATE = {
   title: "",
@@ -59,6 +60,7 @@ const Create = () => {
 
   return (
     <SafeAreaView className="bg-primary h-full w-full">
+      {uploading && <LoadingIndicator />}
       <ScrollView className="px-4 my-6">
         <Text className="text-xl text-white font-psemibold">Upload Video</Text>
 

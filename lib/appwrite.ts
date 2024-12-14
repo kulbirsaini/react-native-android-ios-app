@@ -23,6 +23,10 @@ const avatars = new Avatars(client);
 const databases = new Databases(client);
 const storage = new Storage(client);
 
+const delay = async () => {
+  await new Promise((r) => setTimeout(r, 100));
+};
+
 // Register User
 export const createUser = async (email: string, password: string, username: string) => {
   const newAccount = await account.create(ID.unique(), email, password, username);
@@ -44,6 +48,7 @@ export const createUser = async (email: string, password: string, username: stri
 };
 
 export const signIn = async (email: string, password: string) => {
+  await delay();
   try {
     return await getCurrentUser();
   } catch (error) {
@@ -73,6 +78,7 @@ export const getCurrentUser = async () => {
 };
 
 export const getAllPosts = async () => {
+  await delay();
   const posts = await databases.listDocuments(appwriteConfig.databaseId, appwriteConfig.videoCollectionId);
   return posts.documents;
 };
@@ -94,6 +100,7 @@ export const searchPosts = async (query: string) => {
 };
 
 export const savePost = async (user, postId: string) => {
+  await delay();
   if (!user || !user.$id || !postId) {
     return;
   }

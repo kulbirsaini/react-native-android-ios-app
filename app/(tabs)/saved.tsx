@@ -1,4 +1,5 @@
 import EmptyState from "@/components/EmptyState";
+import LoadingIndicator from "@/components/LoadingIndicator";
 import SearchInput from "@/components/SearchInput";
 import VideoCard from "@/components/VideoCard";
 import { images } from "@/constants";
@@ -8,17 +9,18 @@ import { searchSavedPosts } from "@/lib/appwrite";
 import { useCallback, useState } from "react";
 import { View, Text, FlatList, Alert, Image, RefreshControl } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import React from "react";
 
 const Bookmark = () => {
   const { user } = useGlobalContext();
   const [query, setQuery] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const searchFn = useCallback(() => searchSavedPosts(user?.savedVideos || [], query), [user?.savedVideos, query]);
-  const { data: videos, error, refresh } = useAppwrite(searchFn, []);
+  const { data: videos, error, refresh, isLoading } = useAppwrite(searchFn, []);
 
   const onRefresh = async () => {
     setRefreshing(true);
-    refresh();
+    await refresh();
     setRefreshing(false);
   };
 
@@ -36,6 +38,7 @@ const Bookmark = () => {
 
   return (
     <SafeAreaView className="h-full w-full bg-primary">
+      {isLoading && <LoadingIndicator />}
       <FlatList
         data={videos}
         keyExtractor={(item) => item.$id.toString()}
@@ -51,9 +54,9 @@ const Bookmark = () => {
           </View>
         }
         ListEmptyComponent={() => (
-          <EmptyState title="No videos found!" subtitle="Adjust your search query to get some results." />
+          <>{!isLoading && <EmptyState title="No videos found!" subtitle="Adjust your search query to get some results." />}</>
         )}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        refreshControl={<RefreshControl refreshing={false} onRefresh={onRefresh} />}
       />
     </SafeAreaView>
   );

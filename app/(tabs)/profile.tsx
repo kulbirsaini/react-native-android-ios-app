@@ -1,19 +1,22 @@
 import EmptyState from "@/components/EmptyState";
 import InfoBox from "@/components/InfoBox";
+import LoadingIndicator from "@/components/LoadingIndicator";
 import VideoCard from "@/components/VideoCard";
 import { icons } from "@/constants";
 import { useGlobalContext } from "@/context/GlobalContextProvider";
 import useAppwrite from "@/hooks/useAppwrite";
 import { getUserPosts, signOut } from "@/lib/appwrite";
 import { router } from "expo-router";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { View, Image, FlatList, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import React from "react";
 
 const Profile = () => {
   const { user, setUser, setIsLoggedIn } = useGlobalContext();
   const userPostsFn = useCallback(() => getUserPosts(user?.$id?.toString()), [user?.$id?.toString()]);
   const { data: videos, isLoading, error, refresh } = useAppwrite(userPostsFn, []);
+  const [isSigningOut, setIsSigningOut] = useState(false);
 
   useEffect(() => {
     refresh();
@@ -24,14 +27,21 @@ const Profile = () => {
   }
 
   const logout = async () => {
-    await signOut();
-    setUser(null);
-    setIsLoggedIn(false);
-    router.replace("/signin");
+    setIsSigningOut(true);
+
+    try {
+      await signOut();
+      setUser(null);
+      setIsLoggedIn(false);
+      router.replace("/signin");
+    } finally {
+      setIsSigningOut(false);
+    }
   };
 
   return (
     <SafeAreaView className="bg-primary h-full w-full">
+      {(isLoading || isSigningOut) && <LoadingIndicator />}
       <FlatList
         data={videos}
         keyExtractor={(item) => item.$id.toString()}
@@ -54,7 +64,9 @@ const Profile = () => {
             </View>
           </View>
         )}
-        ListEmptyComponent={() => <EmptyState title="No videos found!" subtitle="Be the first one to upload a video!" />}
+        ListEmptyComponent={() => (
+          <>{!isLoading && <EmptyState title="No videos found!" subtitle="Be the first one to upload a video!" />}</>
+        )}
       />
     </SafeAreaView>
   );

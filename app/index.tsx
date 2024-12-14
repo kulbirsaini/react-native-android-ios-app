@@ -5,6 +5,7 @@ import { StatusBar } from "expo-status-bar";
 import { Redirect, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useGlobalContext } from "@/context/GlobalContextProvider";
+import LoadingIndicator from "@/components/LoadingIndicator";
 
 const Main = () => {
   const { isLoggedIn, isLoading } = useGlobalContext();
@@ -16,6 +17,7 @@ const Main = () => {
   return (
     <SafeAreaView className="bg-primary h-full">
       <ScrollView contentContainerStyle={{ height: "100%" }}>
+        {isLoading && <LoadingIndicator />}
         <View className="w-full h-full justify-center items-center px-4">
           <Image source={images.logo} className="w-[130px] h-[84px]" resizeMode="contain" />
           <Image source={images.cards} className="max-w-[380px] w-full h-[300px]" resizeMode="contain" />
@@ -31,7 +33,12 @@ const Main = () => {
             Where creativity meets innovation: Embark on a journey of limitless exploration with Aora
           </Text>
 
-          <CustomButton title="Continue with Email" handlePress={() => router.push("/signin")} containerStyles="w-full mt-7" />
+          <CustomButton
+            title="Continue with Email"
+            handlePress={() => router.push("/signin")}
+            containerStyles="w-full mt-7"
+            isLoading={isLoading}
+          />
         </View>
       </ScrollView>
 

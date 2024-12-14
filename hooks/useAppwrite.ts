@@ -11,9 +11,9 @@ const useAppwrite = (fn, defaultValue) => {
     setError(null);
   };
 
-  const refresh = () => {
+  const refresh = async () => {
     reset();
-    asyncFn();
+    await asyncFn();
   };
 
   const asyncFn = async () => {

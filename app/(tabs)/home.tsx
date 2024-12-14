@@ -1,4 +1,5 @@
 import EmptyState from "@/components/EmptyState";
+import LoadingIndicator from "@/components/LoadingIndicator";
 import SearchInput from "@/components/SearchInput";
 import Trending from "@/components/Trending";
 import VideoCard from "@/components/VideoCard";
@@ -8,18 +9,18 @@ import useAppwrite from "@/hooks/useAppwrite";
 import { getAllPosts, getLatestPosts } from "@/lib/appwrite";
 import { router } from "expo-router";
 import { useState } from "react";
-import { View, Text, FlatList, Image, RefreshControl, Alert } from "react-native";
+import { View, Text, FlatList, Image, RefreshControl, Alert, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const Home = () => {
   const { user } = useGlobalContext();
   const [refreshing, setRefreshing] = useState(false);
   const { data: videos, isLoading, error, refresh } = useAppwrite(getAllPosts, []);
-  const { data: latestVideos } = useAppwrite(getLatestPosts, []);
+  const { data: latestVideos, isLoading: isLoadingLatestVideos } = useAppwrite(getLatestPosts, []);
 
   const onRefresh = async () => {
     setRefreshing(true);
-    refresh();
+    await refresh();
     setRefreshing(false);
   };
 
@@ -36,7 +37,8 @@ const Home = () => {
   };
 
   return (
-    <SafeAreaView className="bg-primary h-full">
+    <SafeAreaView className="bg-primary h-full relative">
+      {(isLoading || isLoadingLatestVideos || refreshing) && <LoadingIndicator />}
       <FlatList
         data={videos}
         keyExtractor={(item) => item.$id.toString()}
@@ -63,7 +65,7 @@ const Home = () => {
           </View>
         )}
         ListEmptyComponent={() => <EmptyState title="No Videos Found!" subtitle="Be the first one to upload a video!" />}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        refreshControl={<RefreshControl refreshing={false} onRefresh={onRefresh} />}
       />
     </SafeAreaView>
   );
