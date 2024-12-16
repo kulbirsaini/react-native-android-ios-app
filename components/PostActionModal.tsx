@@ -51,7 +51,7 @@ const PostActionModal = () => {
               className="flex-row py-2 pl-6 gap-3 items-center justify-start border-secondary-100 border-b first:border-t"
               onPress={onUnsavePost}
             >
-              <Image source={icons.search} resizeMode="contain" className="w-3 h-3" />
+              <Image source={icons.trash} resizeMode="contain" className="w-3 h-3" />
               <Text className="text-white font-pregular text-lg">Delete</Text>
             </TouchableOpacity>
           )}
