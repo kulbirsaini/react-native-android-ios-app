@@ -6,6 +6,8 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import "react-native-reanimated";
 import "../assets/css/global.css";
+import LoadingIndicator from "@/components/LoadingIndicator";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -31,18 +33,20 @@ export default function RootLayout() {
   }, [loaded]);
 
   if (!loaded) {
-    return null;
+    return <LoadingIndicator />;
   }
 
   return (
-    <GlobalContextProvider>
-      <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="search/[query]" options={{ headerShown: false }} />
-      </Stack>
-      <StatusBar backgroundColor="#161622" style="light" />
-    </GlobalContextProvider>
+    <GestureHandlerRootView>
+      <GlobalContextProvider>
+        <Stack>
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="search/[query]" options={{ headerShown: false }} />
+        </Stack>
+        <StatusBar backgroundColor="#161622" style="light" />
+      </GlobalContextProvider>
+    </GestureHandlerRootView>
   );
 }
