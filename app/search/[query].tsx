@@ -38,7 +38,7 @@ const Search = () => {
       <FlatList
         data={videos}
         keyExtractor={(item) => item.$id.toString()}
-        renderItem={({ item }) => <VideoCard video={item} canSave />}
+        renderItem={({ item }) => <VideoCard video={item} />}
         ListHeaderComponent={() => (
           <View className="my-6 px-4">
             <View className="justify-between items-start flex-row mb-6">

@@ -13,7 +13,7 @@ const VideoCard = ({
     creator: { username, avatar },
   },
   showMenu = false,
-  onToggleMenu,
+  onToggleMenu = (id: string) => {},
 }) => {
   const [play, setPlay] = useState(false);
 
