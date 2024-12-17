@@ -12,10 +12,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import React from "react";
 import { usePostActionContext } from "@/context/PostActionContextProvider";
 import { getUserPosts, logout } from "@/lib/api";
+import { RefreshControl } from "react-native-gesture-handler";
 
 const Profile = () => {
   const { user, setUser, setIsLoggedIn } = useGlobalContext();
   const { setCurrentPostId, isProcessing } = usePostActionContext();
+  const [refreshing, setRefreshing] = useState(false);
   const userPostsFn = useCallback(() => getUserPosts(user?.$id?.toString()), [user?.$id?.toString()]);
   const { data: videos, isLoading, error, refresh } = useAppwrite(userPostsFn, []);
   const [isSigningOut, setIsSigningOut] = useState(false);
@@ -27,6 +29,12 @@ const Profile = () => {
   if (error) {
     console.error(user?.$id, videos, isLoading, error);
   }
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await refresh();
+    setRefreshing(false);
+  };
 
   const onLogout = async () => {
     setIsSigningOut(true);
@@ -71,6 +79,7 @@ const Profile = () => {
             ListEmptyComponent={() => (
               <>{!isLoading && <EmptyState title="No videos found!" subtitle="Be the first one to upload a video!" />}</>
             )}
+            refreshControl={<RefreshControl refreshing={false} onRefresh={onRefresh} />}
           />
         ),
         [videos]
