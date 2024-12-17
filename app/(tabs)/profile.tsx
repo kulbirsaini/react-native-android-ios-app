@@ -5,13 +5,13 @@ import VideoCard from "@/components/VideoCard";
 import { icons } from "@/constants";
 import { useGlobalContext } from "@/context/GlobalContextProvider";
 import useAppwrite from "@/hooks/useAppwrite";
-import { getUserPosts, signOut } from "@/lib/appwrite";
 import { router } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { View, Image, FlatList, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import React from "react";
 import { usePostActionContext } from "@/context/PostActionContextProvider";
+import { getUserPosts, logout } from "@/lib/api";
 
 const Profile = () => {
   const { user, setUser, setIsLoggedIn } = useGlobalContext();
@@ -25,14 +25,14 @@ const Profile = () => {
   }, [user?.$id?.toString()]);
 
   if (error) {
-    console.log(user?.$id, videos, isLoading, error);
+    console.error(user?.$id, videos, isLoading, error);
   }
 
-  const logout = async () => {
+  const onLogout = async () => {
     setIsSigningOut(true);
 
     try {
-      await signOut();
+      await logout();
       setUser(null);
       setIsLoggedIn(false);
       router.replace("/signin");
@@ -52,7 +52,7 @@ const Profile = () => {
             renderItem={({ item }) => <VideoCard showMenu video={item} onToggleMenu={setCurrentPostId} />}
             ListHeaderComponent={() => (
               <View className="w-full justify-center items-center mt-6 mb-12 px-4">
-                <TouchableOpacity className="w-full items-end mb-10" onPress={logout}>
+                <TouchableOpacity className="w-full items-end mb-10" onPress={onLogout}>
                   <Image source={icons.logout} resizeMode="contain" className="w-6 h-6" />
                 </TouchableOpacity>
 

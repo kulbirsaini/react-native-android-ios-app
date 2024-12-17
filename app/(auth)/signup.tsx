@@ -5,9 +5,9 @@ import { images } from "@/constants";
 import FormField from "@/components/FormField";
 import CustomButton from "@/components/CustomButton";
 import { Link, router } from "expo-router";
-import { createUser } from "@/lib/appwrite";
 import { useGlobalContext } from "@/context/GlobalContextProvider";
 import LoadingIndicator from "@/components/LoadingIndicator";
+import { register } from "@/lib/api";
 
 const Signup = () => {
   const [form, setForm] = useState({ username: "", email: "", password: "" });
@@ -28,13 +28,13 @@ const Signup = () => {
     setIsSubmitting(true);
 
     try {
-      const user = await createUser(form.email, form.password, form.username);
+      const user = await register(form.email, form.password, form.username);
       setUser(user);
       setIsLoggedIn(true);
       router.push("/home");
     } catch (error) {
       Alert.alert("Error", error.message);
-      console.log(error);
+      console.error(error);
     } finally {
       setIsSubmitting(false);
     }

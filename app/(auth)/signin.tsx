@@ -3,7 +3,7 @@ import FormField from "@/components/FormField";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import { images } from "@/constants";
 import { useGlobalContext } from "@/context/GlobalContextProvider";
-import { signIn } from "@/lib/appwrite";
+import { login } from "@/lib/api";
 import { Link, router } from "expo-router";
 import { useState } from "react";
 import { View, Text, ScrollView, Image, Alert } from "react-native";
@@ -12,7 +12,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const Signin = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { setUser, setIsLoggedIn } = useGlobalContext();
+  const { setUser, saveAuthToken, setIsLoggedIn } = useGlobalContext();
 
   const handleTextChange = (params) => {
     setForm((prevState) => {
@@ -28,13 +28,14 @@ const Signin = () => {
     setIsSubmitting(true);
 
     try {
-      const user = await signIn(form.email, form.password);
+      const { user, authToken } = await login(form.email, form.password);
       setUser(user);
+      saveAuthToken(authToken);
       setIsLoggedIn(true);
       router.push("/home");
     } catch (error) {
       Alert.alert("Error", error.message);
-      console.log(error);
+      console.error(error);
     } finally {
       setIsSubmitting(false);
     }

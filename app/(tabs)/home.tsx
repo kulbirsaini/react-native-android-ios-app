@@ -7,7 +7,7 @@ import { images } from "@/constants";
 import { useGlobalContext } from "@/context/GlobalContextProvider";
 import { usePostActionContext } from "@/context/PostActionContextProvider";
 import useAppwrite from "@/hooks/useAppwrite";
-import { getAllPosts, getLatestPosts } from "@/lib/appwrite";
+import { getAllPosts, getLatestPosts } from "@/lib/api";
 import { router } from "expo-router";
 import { useMemo, useState } from "react";
 import { View, Text, FlatList, Image, RefreshControl, Alert } from "react-native";

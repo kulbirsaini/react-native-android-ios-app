@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from "react";
 import { useGlobalContext } from "./GlobalContextProvider";
-import { savePost, unsavePost } from "@/lib/appwrite";
+import { likePost, unlikePost } from "@/lib/api";
 
 const PostActionContext = createContext({
   currentPostId: null,
@@ -22,7 +22,7 @@ export const PostActionContextProvider = ({ children }) => {
   const save = async () => {
     setState((prevState) => ({ ...prevState, isProcessing: true }));
     try {
-      const result = await savePost(user, state.currentPostId);
+      const result = await likePost(state.currentPostId);
       if (result) {
         setUser((prevUser) => {
           return { ...prevUser, savedVideos: [...result.savedVideos] };
@@ -37,7 +37,7 @@ export const PostActionContextProvider = ({ children }) => {
     setState((prevState) => ({ ...prevState, isProcessing: true }));
 
     try {
-      const result = await unsavePost(user, state.currentPostId);
+      const result = await unlikePost(state.currentPostId);
       if (result) {
         setUser((prevUser) => {
           return { ...prevUser, savedVideos: [...result.savedVideos] };

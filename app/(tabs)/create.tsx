@@ -7,9 +7,8 @@ import { View, Text, ScrollView, TouchableOpacity, Image, Alert } from "react-na
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
-import { createPost } from "@/lib/appwrite";
-import { useGlobalContext } from "@/context/GlobalContextProvider";
 import LoadingIndicator from "@/components/LoadingIndicator";
+import { createPost } from "@/lib/api";
 
 const DEFAULT_FORM_STATE = {
   title: "",
@@ -19,7 +18,6 @@ const DEFAULT_FORM_STATE = {
 };
 
 const Create = () => {
-  const { user } = useGlobalContext();
   const [uploading, setUploading] = useState(false);
   const [form, setForm] = useState({ ...DEFAULT_FORM_STATE });
 
@@ -39,20 +37,20 @@ const Create = () => {
   };
 
   const submit = async () => {
-    if (!form.title || !form.video || !form.thumbnail || !form.prompt) {
-      return Alert.alert("Error", "Please fill in all fields.");
-    }
+    // if (!form.title || !form.video || !form.thumbnail || !form.prompt) {
+    //   return Alert.alert("Error", "Please fill in all fields.");
+    // }
 
     setUploading(true);
 
     try {
-      await createPost({ ...form, userId: user.$id });
+      await createPost({ ...form });
       router.push("/home");
       Alert.alert("Success", "Post created succesfully!");
       setForm({ ...DEFAULT_FORM_STATE });
     } catch (error) {
       Alert.alert("Error", error.message);
-      console.log(error);
+      console.error(error);
     } finally {
       setUploading(false);
     }

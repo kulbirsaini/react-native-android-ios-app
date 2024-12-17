@@ -5,19 +5,19 @@ import VideoCard from "@/components/VideoCard";
 import { images } from "@/constants";
 import { useGlobalContext } from "@/context/GlobalContextProvider";
 import useAppwrite from "@/hooks/useAppwrite";
-import { searchSavedPosts } from "@/lib/appwrite";
 import { useCallback, useMemo, useState } from "react";
 import { View, Text, FlatList, Alert, Image, RefreshControl } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import React from "react";
 import { usePostActionContext } from "@/context/PostActionContextProvider";
+import { searchSavedPosts } from "@/lib/api";
 
 const Bookmark = () => {
   const { user } = useGlobalContext();
   const { setCurrentPostId, isProcessing } = usePostActionContext();
   const [query, setQuery] = useState("");
   const [refreshing, setRefreshing] = useState(false);
-  const searchFn = useCallback(() => searchSavedPosts(user?.savedVideos || [], query), [user?.savedVideos, query]);
+  const searchFn = useCallback(() => searchSavedPosts(query), [user?.savedVideos, query]);
   const { data: videos, error, refresh, isLoading } = useAppwrite(searchFn, []);
 
   const onRefresh = async () => {

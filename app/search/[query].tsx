@@ -4,12 +4,12 @@ import SearchInput from "@/components/SearchInput";
 import VideoCard from "@/components/VideoCard";
 import { images } from "@/constants";
 import useAppwrite from "@/hooks/useAppwrite";
-import { searchPosts } from "@/lib/appwrite";
 import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect } from "react";
 import { View, Text, Image, FlatList, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import React from "react";
+import { searchPosts } from "@/lib/api";
 
 const Search = () => {
   const { query } = useLocalSearchParams();
@@ -21,7 +21,7 @@ const Search = () => {
   }, [query]);
 
   if (error) {
-    console.log(videos, isLoading, error);
+    console.error(videos, isLoading, error);
   }
 
   const onSearch = (query) => {
