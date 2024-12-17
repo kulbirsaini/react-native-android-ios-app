@@ -1,6 +1,6 @@
 # Welcome to your Expo app 👋
 
-I built this app while learning React Native from [React Native Course for Beginners in 2024 | Build a Full Stack React Native App](https://www.youtube.com/watch?v=ZBCUegTZF7M). I added a bunch of additional features including extracting the Appwrite operations to an [https://github.com/kulbirsaini/express-appwrite-backend](Express Backend). You can clone both, setup and play around as you like.
+I built this app while learning React Native from [React Native Course for Beginners in 2024 | Build a Full Stack React Native App](https://www.youtube.com/watch?v=ZBCUegTZF7M). I added a bunch of additional features including extracting the Appwrite operations to an [Express Backend](https://github.com/kulbirsaini/express-appwrite-backend). You can clone both, setup and play around as you like.
 
 ## Get started
 
@@ -9,12 +9,13 @@ I built this app while learning React Native from [React Native Course for Begin
    ```bash
    npm install
    ```
+
 2. Setup environment
 
    - Copy `.env.example` to `.env.local`
    - Set API Endpoint to the express backend mentioend above
 
-2. Start the app
+3. Start the app
 
    ```bash
     npx expo start
