@@ -1,5 +1,12 @@
 import * as SecureStore from "expo-secure-store";
 
+interface PostQueryParams {
+  latest?: boolean;
+  search?: string;
+  scope?: string;
+  userId?: string;
+}
+
 const getAuthToken = async () => {
   return await SecureStore.getItemAsync("authToken");
 };
@@ -91,14 +98,7 @@ export const getCurrentUser = async () => {
   return data;
 };
 
-interface Params {
-  latest?: boolean;
-  query?: string;
-  scope?: string;
-  userId?: string;
-}
-
-export const getAllPosts = async (params: Params) => {
+export const getAllPosts = async (params: PostQueryParams) => {
   const token = await getAuthToken();
   if (!token) {
     return { user: null };
@@ -115,8 +115,8 @@ export const getAllPosts = async (params: Params) => {
 };
 
 export const getLatestPosts = () => getAllPosts({ latest: true });
-export const searchPosts = (query: string) => getAllPosts({ query });
-export const searchSavedPosts = (query: string) => getAllPosts({ query, scope: "saved" });
+export const searchPosts = (query: string) => getAllPosts({ search: query });
+export const searchSavedPosts = (query: string) => getAllPosts({ search: query, scope: "saved" });
 export const getUserPosts = (userId: string) => getAllPosts({ userId, scope: "user" });
 
 export const likePost = async (postId: string) => {

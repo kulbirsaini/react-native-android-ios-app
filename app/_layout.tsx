@@ -8,6 +8,9 @@ import "react-native-reanimated";
 import "../assets/css/global.css";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { PostActionContextProvider } from "@/context/PostActionContextProvider";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import PostActionModal from "@/components/PostActionModal";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -39,13 +42,18 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView>
       <GlobalContextProvider>
-        <Stack>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="search/[query]" options={{ headerShown: false }} />
-        </Stack>
-        <StatusBar backgroundColor="#161622" style="light" />
+        <BottomSheetModalProvider>
+          <PostActionContextProvider>
+            <Stack>
+              <Stack.Screen name="index" options={{ headerShown: false }} />
+              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="search/[query]" options={{ headerShown: false }} />
+            </Stack>
+            <StatusBar backgroundColor="#161622" style="light" />
+            <PostActionModal />
+          </PostActionContextProvider>
+        </BottomSheetModalProvider>
       </GlobalContextProvider>
     </GestureHandlerRootView>
   );
