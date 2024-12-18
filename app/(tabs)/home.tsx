@@ -6,7 +6,7 @@ import VideoCard from "@/components/VideoCard";
 import { images } from "@/constants";
 import { useGlobalContext } from "@/context/GlobalContextProvider";
 import { usePostActionContext } from "@/context/PostActionContextProvider";
-import useAppwrite from "@/hooks/useAppwrite";
+import useApi from "@/hooks/useApi";
 import { getAllPosts, getLatestPosts } from "@/lib/api";
 import { router } from "expo-router";
 import { useMemo, useState } from "react";
@@ -17,8 +17,8 @@ const Home = () => {
   const { user } = useGlobalContext();
   const { setCurrentPostId, isProcessing } = usePostActionContext();
   const [refreshing, setRefreshing] = useState(false);
-  const { data: videos, isLoading, error, refresh } = useAppwrite(getAllPosts, []);
-  const { data: latestVideos, isLoading: isLoadingLatestVideos } = useAppwrite(getLatestPosts, []);
+  const { data: videos, isLoading, error, refresh } = useApi(getAllPosts, []);
+  const { data: latestVideos, isLoading: isLoadingLatestVideos } = useApi(getLatestPosts, []);
 
   const onRefresh = async () => {
     setRefreshing(true);

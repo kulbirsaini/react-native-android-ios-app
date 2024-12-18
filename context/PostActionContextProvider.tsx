@@ -13,7 +13,7 @@ const PostActionContext = createContext({
 export const usePostActionContext = () => useContext(PostActionContext);
 
 export const PostActionContextProvider = ({ children }) => {
-  const { user, setUser } = useGlobalContext();
+  const { setUser } = useGlobalContext();
   const [state, setState] = useState({
     currentPostId: null,
     isProcessing: false,

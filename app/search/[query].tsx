@@ -3,7 +3,7 @@ import LoadingIndicator from "@/components/LoadingIndicator";
 import SearchInput from "@/components/SearchInput";
 import VideoCard from "@/components/VideoCard";
 import { images } from "@/constants";
-import useAppwrite from "@/hooks/useAppwrite";
+import useApi from "@/hooks/useApi";
 import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect } from "react";
 import { View, Text, Image, FlatList, Alert } from "react-native";
@@ -14,7 +14,7 @@ import { searchPosts } from "@/lib/api";
 const Search = () => {
   const { query } = useLocalSearchParams();
   const searchFn = useCallback(() => searchPosts(query), [query]);
-  const { data: videos, isLoading, error, refresh } = useAppwrite(searchFn, []);
+  const { data: videos, isLoading, error, refresh } = useApi(searchFn, []);
 
   useEffect(() => {
     refresh();

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const useAppwrite = (fn, defaultValue) => {
+const useApi = (fn, defaultValue) => {
   const [data, setData] = useState(defaultValue);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -42,4 +42,4 @@ const useAppwrite = (fn, defaultValue) => {
   };
 };
 
-export default useAppwrite;
+export default useApi;

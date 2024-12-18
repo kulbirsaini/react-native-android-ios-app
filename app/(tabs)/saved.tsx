@@ -4,7 +4,7 @@ import SearchInput from "@/components/SearchInput";
 import VideoCard from "@/components/VideoCard";
 import { images } from "@/constants";
 import { useGlobalContext } from "@/context/GlobalContextProvider";
-import useAppwrite from "@/hooks/useAppwrite";
+import useApi from "@/hooks/useApi";
 import { useCallback, useMemo, useState } from "react";
 import { View, Text, FlatList, Alert, Image, RefreshControl } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -18,7 +18,7 @@ const Bookmark = () => {
   const [query, setQuery] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const searchFn = useCallback(() => searchSavedPosts(query), [user?.savedVideos, query]);
-  const { data: videos, error, refresh, isLoading } = useAppwrite(searchFn, []);
+  const { data: videos, error, refresh, isLoading } = useApi(searchFn, []);
 
   const onRefresh = async () => {
     setRefreshing(true);

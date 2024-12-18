@@ -4,7 +4,7 @@ import LoadingIndicator from "@/components/LoadingIndicator";
 import VideoCard from "@/components/VideoCard";
 import { icons } from "@/constants";
 import { useGlobalContext } from "@/context/GlobalContextProvider";
-import useAppwrite from "@/hooks/useAppwrite";
+import useApi from "@/hooks/useApi";
 import { router } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { View, Image, FlatList, TouchableOpacity } from "react-native";
@@ -19,7 +19,7 @@ const Profile = () => {
   const { setCurrentPostId, isProcessing } = usePostActionContext();
   const [refreshing, setRefreshing] = useState(false);
   const userPostsFn = useCallback(() => getUserPosts(user?.$id?.toString()), [user?.$id?.toString()]);
-  const { data: videos, isLoading, error, refresh } = useAppwrite(userPostsFn, []);
+  const { data: videos, isLoading, error, refresh } = useApi(userPostsFn, []);
   const [isSigningOut, setIsSigningOut] = useState(false);
 
   useEffect(() => {

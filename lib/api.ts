@@ -4,7 +4,7 @@ const getAuthToken = async () => {
   return await SecureStore.getItemAsync("authToken");
 };
 
-const getUrl = (endpoint, params = {}) => {
+const getUrl = (endpoint: string, params = {}) => {
   const queryString = new URLSearchParams(params).toString();
   return `${process.env.EXPO_PUBLIC_API_BASE_URL}${endpoint}${queryString ? `?${queryString}` : ""}`;
 };

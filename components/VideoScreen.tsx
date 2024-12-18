@@ -1,15 +1,40 @@
-import { useEvent, useEventListener } from "expo";
+import { useGlobalContext } from "@/context/GlobalContextProvider";
+import { useEventListener } from "expo";
 import { useVideoPlayer, VideoView } from "expo-video";
-import { View } from "react-native";
+import { useEffect } from "react";
+import { Alert, View } from "react-native";
 
-const VideoScreen = ({ videoSource, onPlayToEnd, playerStyles }) => {
-  //videoSource = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4";
+const VideoScreen = ({ id, videoSource, onPlayToEnd, playerStyles }) => {
+  const { currentlyPlayingVideoId, setCurrentlyPlayingVideoId } = useGlobalContext();
+
   const player = useVideoPlayer(videoSource, (player) => {
     player.loop = false;
     player.play();
   });
-  const { isPlaying } = useEvent(player, "playingChange", { isPlaying: player.playing });
+
+  useEventListener(player, "statusChange", ({ error }) => {
+    if (error) {
+      Alert.alert("Error", "An error occurred while playing the video.");
+      return onPlayToEnd();
+    }
+  });
+
+  useEventListener(player, "playingChange", ({ isPlaying }) => {
+    // If a paused player started playing,
+    // set the currently playing video to current video so that all other players can pause
+    if (isPlaying && currentlyPlayingVideoId !== id) {
+      setCurrentlyPlayingVideoId(id);
+    }
+  });
+
   useEventListener(player, "playToEnd", onPlayToEnd);
+
+  useEffect(() => {
+    // If the current playing video changed from this video, pause this video player
+    if (currentlyPlayingVideoId !== id) {
+      player.pause();
+    }
+  }, [currentlyPlayingVideoId]);
 
   return (
     <View className={playerStyles}>

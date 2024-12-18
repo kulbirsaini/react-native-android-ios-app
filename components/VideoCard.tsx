@@ -3,6 +3,7 @@ import { useState } from "react";
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import VideoScreen from "./VideoScreen";
 import React from "react";
+import { useGlobalContext } from "@/context/GlobalContextProvider";
 
 const VideoCard = ({
   video: {
@@ -15,7 +16,18 @@ const VideoCard = ({
   showMenu = false,
   onToggleMenu = (id: string) => {},
 }) => {
+  const { setCurrentlyPlayingVideoId } = useGlobalContext();
   const [play, setPlay] = useState(false);
+
+  const onVideoPlay = () => {
+    setCurrentlyPlayingVideoId($id);
+    setPlay(true);
+  };
+
+  const onVideoEnd = () => {
+    setCurrentlyPlayingVideoId(null);
+    setPlay(false);
+  };
 
   return (
     <>
@@ -44,12 +56,12 @@ const VideoCard = ({
         </View>
 
         {play ? (
-          <VideoScreen videoSource={video} onPlayToEnd={() => setPlay(false)} playerStyles="w-full h-60 rounded-xl mt-3" />
+          <VideoScreen id={$id} videoSource={video} onPlayToEnd={onVideoEnd} playerStyles="w-full h-60 rounded-xl mt-3" />
         ) : (
           <TouchableOpacity
             className="w-full h-60 rounded-xl mt-3 relative justify-center items-center"
             activeOpacity={0.7}
-            onPress={() => setPlay(true)}
+            onPress={onVideoPlay}
           >
             <Image source={{ uri: thumbnail }} className="w-full h-full rounded-xl mt-3" resizeMode="cover" />
             <Image source={icons.play} className="w-12 h-12 absolute" resizeMode="contain" />

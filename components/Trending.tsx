@@ -4,6 +4,7 @@ import * as Animatable from "react-native-animatable";
 import { useState } from "react";
 import { icons } from "@/constants";
 import VideoScreen from "./VideoScreen";
+import { useGlobalContext } from "@/context/GlobalContextProvider";
 
 const zoomIn = {
   0: { scale: 0.9 },
@@ -16,30 +17,30 @@ const zoomOut = {
 };
 
 const TrendingItem = ({ activeItemId, item }) => {
+  const { setCurrentlyPlayingVideoId } = useGlobalContext();
   const [play, setPlay] = useState(false);
+
+  const onVideoPlay = () => {
+    setCurrentlyPlayingVideoId(item.$id);
+    setPlay(true);
+  };
+
+  const onVideoEnd = () => {
+    setCurrentlyPlayingVideoId(null);
+    setPlay(false);
+  };
 
   return (
     <Animatable.View className="mr-5" animation={activeItemId === item.$id ? zoomIn : zoomOut} duration={500}>
       {play ? (
         <VideoScreen
+          id={item.$id}
           videoSource={item.video}
-          onPlayToEnd={() => setPlay(false)}
+          onPlayToEnd={onVideoEnd}
           playerStyles="w-52 h-72 rounded-[35px] mt-3 bg-white/10"
         />
       ) : (
-        // <Video
-        //   source={{ uri: item.video }}
-        //   className="w-52 h-72 rounded-[35px] mt-3 bg-white/10"
-        //   resizeMode={ResizeMode.CONTAIN}
-        //   useNativeControls
-        //   shouldPlay
-        //   onPlaybackStatusUpdate={(status) => {
-        //     if (status.didJustFinish) {
-        //       setPlay(false);
-        //     }
-        //   }}
-        // />
-        <TouchableOpacity className="relative justify-center items-center" activeOpacity={0.7} onPress={() => setPlay(true)}>
+        <TouchableOpacity className="relative justify-center items-center" activeOpacity={0.7} onPress={onVideoPlay}>
           <ImageBackground
             source={{ uri: item.thumbnail }}
             className="w-52 h-72 rounded-[35px] my-5 overflow-hidden shadow-lg shadow-black/40"
@@ -72,7 +73,7 @@ const Trending = ({ posts }) => {
       viewabilityConfig={{
         itemVisiblePercentThreshold: 70,
       }}
-      contentOffset={{ x: 170, y: 0 }}
+      contentOffset={{ x: 0, y: 0 }}
     />
   );
 };

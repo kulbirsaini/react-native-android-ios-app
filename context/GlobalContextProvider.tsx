@@ -7,10 +7,12 @@ const GlobalContext = createContext({
   user: null,
   authToken: null,
   isLoading: true,
+  currentlyPlayingVideoId: null,
   setIsLoggedIn: (b: boolean) => {},
   setIsLoading: (b: boolean) => {},
   setUser: (u: object) => {},
   saveAuthToken: (t: string | null) => {},
+  setCurrentlyPlayingVideoId: (id: string | null) => {},
 });
 
 export const useGlobalContext = () => useContext(GlobalContext);
@@ -20,20 +22,11 @@ export const GlobalContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [authToken, setAuthToken] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentlyPlayingVideoId, setCurrentlyPlayingVideoId] = useState(null);
 
   const saveAuthToken = async (authToken: string | null) => {
     await SecureStore.setItemAsync("authToken", authToken);
     setAuthToken(authToken);
-  };
-
-  const getAuthToken = async () => {
-    const result = await SecureStore.getItemAsync("authToken");
-
-    if (result) {
-      setAuthToken(authToken);
-    }
-
-    return result;
   };
 
   useEffect(() => {
@@ -62,10 +55,12 @@ export const GlobalContextProvider = ({ children }) => {
     user,
     authToken,
     isLoading,
+    currentlyPlayingVideoId,
     setIsLoggedIn,
     setIsLoading,
     setUser,
     saveAuthToken,
+    setCurrentlyPlayingVideoId,
   };
 
   return <GlobalContext.Provider value={ctxValue}>{children}</GlobalContext.Provider>;
