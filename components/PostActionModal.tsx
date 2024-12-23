@@ -36,7 +36,7 @@ const PostActionModal = () => {
     <CustomBottomSheetModal ref={bottomSheetRef} onBackdropTouch={hideModal} onDismiss={hideModal}>
       {currentPostId && (
         <View className="bg-black-100 flex-col py-8">
-          {!user.savedVideos.includes(currentPostId) && (
+          {!user.likedPosts.includes(currentPostId) && (
             <TouchableOpacity
               className="flex-row gap-3 py-2 pl-6 items-center justify-start border-secondary-100 border-b first:border-t"
               activeOpacity={0.7}
@@ -46,7 +46,7 @@ const PostActionModal = () => {
               <Text className="text-white font-pregular text-lg">Save</Text>
             </TouchableOpacity>
           )}
-          {user.savedVideos.includes(currentPostId) && (
+          {user.likedPosts.includes(currentPostId) && (
             <TouchableOpacity
               className="flex-row py-2 pl-6 gap-3 items-center justify-start border-secondary-100 border-b first:border-t"
               onPress={onUnsavePost}

@@ -1,6 +1,7 @@
 import { getCurrentUser } from "@/lib/api";
 import { createContext, useState, useContext, useEffect } from "react";
-import * as SecureStore from "expo-secure-store";
+import { Alert } from "react-native";
+import { storeAuthToken } from "@/lib/secureStore";
 
 const GlobalContext = createContext({
   isLoggedIn: false,
@@ -20,25 +21,29 @@ export const useGlobalContext = () => useContext(GlobalContext);
 export const GlobalContextProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
-  const [authToken, setAuthToken] = useState(null);
+  const [authToken, setAuthToken] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [currentlyPlayingVideoId, setCurrentlyPlayingVideoId] = useState(null);
 
-  const saveAuthToken = async (authToken: string | null) => {
-    await SecureStore.setItemAsync("authToken", authToken);
+  const saveAuthToken = async (authToken: string) => {
+    storeAuthToken(authToken);
     setAuthToken(authToken);
   };
 
   useEffect(() => {
     const getUser = async () => {
       try {
-        const { user } = await getCurrentUser();
+        const { user, error } = await getCurrentUser();
         if (user) {
           setIsLoggedIn(true);
           setUser(user);
         } else {
           setIsLoggedIn(false);
           setUser(null);
+
+          if (error) {
+            Alert.alert("Error", error);
+          }
         }
       } catch (error) {
         console.error(error);

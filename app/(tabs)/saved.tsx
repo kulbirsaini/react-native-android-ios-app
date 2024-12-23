@@ -10,14 +10,14 @@ import { View, Text, FlatList, Alert, Image, RefreshControl } from "react-native
 import { SafeAreaView } from "react-native-safe-area-context";
 import React from "react";
 import { usePostActionContext } from "@/context/PostActionContextProvider";
-import { searchSavedPosts } from "@/lib/api";
+import { searchLikedPosts } from "@/lib/api";
 
 const Bookmark = () => {
   const { user } = useGlobalContext();
   const { setCurrentPostId, isProcessing } = usePostActionContext();
   const [query, setQuery] = useState("");
   const [refreshing, setRefreshing] = useState(false);
-  const searchFn = useCallback(() => searchSavedPosts(query), [user?.savedVideos, query]);
+  const searchFn = useCallback(() => searchLikedPosts(query), [user?.likedPosts, query]);
   const { data: videos, error, refresh, isLoading } = useApi(searchFn, []);
 
   const onRefresh = async () => {
@@ -45,7 +45,7 @@ const Bookmark = () => {
         () => (
           <FlatList
             data={videos}
-            keyExtractor={(item) => item.$id.toString()}
+            keyExtractor={(item) => item.id}
             renderItem={({ item }) => <VideoCard showMenu video={item} onToggleMenu={setCurrentPostId} />}
             ListHeaderComponent={
               <View className="px-4 my-6 space-y-6">

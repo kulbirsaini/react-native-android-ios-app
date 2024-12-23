@@ -37,9 +37,9 @@ const Create = () => {
   };
 
   const submit = async () => {
-    // if (!form.title || !form.video || !form.thumbnail || !form.prompt) {
-    //   return Alert.alert("Error", "Please fill in all fields.");
-    // }
+    if (!form.title || !form.video || !form.thumbnail || !form.prompt) {
+      return Alert.alert("Error", "Please fill in all fields.");
+    }
 
     setUploading(true);
 
@@ -75,7 +75,12 @@ const Create = () => {
 
           <TouchableOpacity className="" onPress={() => openPicker("video")}>
             {form.video ? (
-              <VideoScreen videoSource={{ uri: form.video.uri }} onPlayToEnd={() => {}} playerStyles="w-full h-64 rounded-2xl" />
+              <VideoScreen
+                id="new-upload-video"
+                videoSource={{ uri: form.video.uri }}
+                onPlayToEnd={() => {}}
+                playerStyles="w-full h-64 rounded-2xl"
+              />
             ) : (
               <View className="w-full h-40 px-4 bg-black-100 rounded-2xl justify-center items-center">
                 <View className="w-14 h-14 border border-dashed border-secondary-100 justify-center items-center">

@@ -4,6 +4,8 @@ import LoadingIndicator from "@/components/LoadingIndicator";
 import { images } from "@/constants";
 import { useGlobalContext } from "@/context/GlobalContextProvider";
 import { login } from "@/lib/api";
+import { storeEmail } from "@/lib/secureStore";
+import { isValidEmail, isValidPassword } from "@/lib/validator";
 import { Link, router } from "expo-router";
 import { useState } from "react";
 import { View, Text, ScrollView, Image, Alert } from "react-native";
@@ -21,18 +23,41 @@ const Signin = () => {
   };
 
   const handleSignIn = async () => {
-    if (!form.email || !form.password) {
-      return Alert.alert("Error", "Please fill in all the fields.");
+    let errorMessage = null;
+    const email = form.email.trim();
+    const password = form.password.trim();
+    if (!email || !password) {
+      errorMessage = "Please fill in all the fields.";
+    } else if (!isValidEmail(email)) {
+      errorMessage = "Please enter a valid email address.";
+    } else if (!isValidPassword(password)) {
+      errorMessage = "Password should be at least 6 characters long.";
+    }
+
+    if (errorMessage) {
+      return Alert.alert("Input Error", errorMessage);
     }
 
     setIsSubmitting(true);
 
     try {
-      const { user, authToken } = await login(form.email, form.password);
-      setUser(user);
-      saveAuthToken(authToken);
-      setIsLoggedIn(true);
-      router.push("/home");
+      const { user, authToken, message, confirmationPending } = await login(email, password);
+      if (user && authToken) {
+        setUser(user);
+        saveAuthToken(authToken);
+        setIsLoggedIn(true);
+      }
+
+      if (confirmationPending) {
+        storeEmail(email);
+        Alert.alert("Notice", "Email confirmation is pending. Please check your email and enter OTP to confirm.");
+        router.push(`/confirm`);
+      } else {
+        if (message) {
+          Alert.alert("Notice", message);
+        }
+        router.push("/home");
+      }
     } catch (error) {
       Alert.alert("Error", error.message);
       console.error(error);

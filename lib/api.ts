@@ -1,4 +1,4 @@
-import * as SecureStore from "expo-secure-store";
+import { getAuthToken } from "./secureStore";
 
 interface PostQueryParams {
   latest?: boolean;
@@ -6,10 +6,6 @@ interface PostQueryParams {
   scope?: string;
   userId?: string;
 }
-
-const getAuthToken = async () => {
-  return await SecureStore.getItemAsync("authToken");
-};
 
 const getUrl = (endpoint: string, params = {}) => {
   const queryString = new URLSearchParams(params).toString();
@@ -44,8 +40,8 @@ const createNonGetRequest = (method: string, endpoint: string, data = {}, header
   });
 };
 
-export const register = async (email: string, password: string, username: string) => {
-  const response = await createNonGetRequest("POST", "/register", { username, email, password });
+export const register = async (name: string, email: string, password: string, passwordConfirmation: string) => {
+  const response = await createNonGetRequest("POST", "/auth/register", { name, email, password, passwordConfirmation });
   const data = await response.json();
 
   if (!response.ok) {
@@ -56,7 +52,33 @@ export const register = async (email: string, password: string, username: string
 };
 
 export const login = async (email: string, password: string) => {
-  const response = await createNonGetRequest("POST", "/login", { email, password });
+  const response = await createNonGetRequest("POST", "/auth/login", { email, password });
+  const data = await response.json();
+
+  if (response.status === 423) {
+    return { user: null, message: data.message, confirmationPending: true };
+  }
+
+  if (!response.ok) {
+    throw new Error(data.message);
+  }
+
+  return data;
+};
+
+export const requestOtp = async (email: string) => {
+  const response = await createNonGetRequest("POST", "/auth/confirm", { email });
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message);
+  }
+
+  return data;
+};
+
+export const confirmViaOtp = async (email: string, otp: string) => {
+  const response = await createNonGetRequest("POST", "/auth/confirm/otp", { email, otp });
   const data = await response.json();
 
   if (!response.ok) {
@@ -72,7 +94,7 @@ export const logout = async () => {
     return { user: null };
   }
 
-  const response = await createNonGetRequest("DELETE", "/logout", {}, { authToken: token });
+  const response = await createNonGetRequest("DELETE", "/auth/logout", {}, { authToken: token });
   const data = await response.json();
 
   if (!response.ok) {
@@ -88,8 +110,12 @@ export const getCurrentUser = async () => {
     return { user: null };
   }
 
-  const response = await createGetRequest("/me", {}, { authToken: token });
+  const response = await createGetRequest("/auth/me", {}, { authToken: token });
   const data = await response.json();
+
+  if (response.status === 423) {
+    return { user: null, error: data.message };
+  }
 
   if (!response.ok) {
     throw new Error(data.message);
@@ -116,7 +142,7 @@ export const getAllPosts = async (params: PostQueryParams) => {
 
 export const getLatestPosts = () => getAllPosts({ latest: true });
 export const searchPosts = (query: string) => getAllPosts({ search: query });
-export const searchSavedPosts = (query: string) => getAllPosts({ search: query, scope: "saved" });
+export const searchLikedPosts = (query: string) => getAllPosts({ search: query, scope: "liked" });
 export const getUserPosts = (userId: string) => getAllPosts({ userId, scope: "user" });
 
 export const likePost = async (postId: string) => {

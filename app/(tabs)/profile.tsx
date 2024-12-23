@@ -13,21 +13,22 @@ import React from "react";
 import { usePostActionContext } from "@/context/PostActionContextProvider";
 import { getUserPosts, logout } from "@/lib/api";
 import { RefreshControl } from "react-native-gesture-handler";
+import { storeAuthToken } from "@/lib/secureStore";
 
 const Profile = () => {
   const { user, setUser, setIsLoggedIn } = useGlobalContext();
   const { setCurrentPostId, isProcessing } = usePostActionContext();
   const [refreshing, setRefreshing] = useState(false);
-  const userPostsFn = useCallback(() => getUserPosts(user?.$id?.toString()), [user?.$id?.toString()]);
+  const userPostsFn = useCallback(() => getUserPosts(user?.id?.toString()), [user?.id]);
   const { data: videos, isLoading, error, refresh } = useApi(userPostsFn, []);
   const [isSigningOut, setIsSigningOut] = useState(false);
 
   useEffect(() => {
     refresh();
-  }, [user?.$id?.toString()]);
+  }, [user?.id]);
 
   if (error) {
-    console.error(user?.$id, videos, isLoading, error);
+    console.error(user, videos, isLoading, error);
   }
 
   const onRefresh = async () => {
@@ -40,10 +41,14 @@ const Profile = () => {
     setIsSigningOut(true);
 
     try {
+      console.log("logging out");
       await logout();
+      storeAuthToken("");
       setUser(null);
       setIsLoggedIn(false);
       router.replace("/signin");
+    } catch (error) {
+      console.error(error);
     } finally {
       setIsSigningOut(false);
     }
@@ -56,7 +61,7 @@ const Profile = () => {
         () => (
           <FlatList
             data={videos}
-            keyExtractor={(item) => item.$id}
+            keyExtractor={(item) => item.id}
             renderItem={({ item }) => <VideoCard showMenu video={item} onToggleMenu={setCurrentPostId} />}
             ListHeaderComponent={() => (
               <View className="w-full justify-center items-center mt-6 mb-12 px-4">
@@ -68,7 +73,7 @@ const Profile = () => {
                   <Image source={{ uri: user?.avatar }} resizeMode="contain" className="w-[90%] h-[90%] rounded-lg" />
                 </View>
 
-                <InfoBox title={user?.username} containerStyles="mt-5" titleStyles="text-lg" />
+                <InfoBox title={user?.name} containerStyles="mt-5" titleStyles="text-lg" />
 
                 <View className="mt-5 flex-row">
                   <InfoBox title={videos?.length} subtitle="Posts" containerStyles="mr-10" titleStyles="text-xl" />

@@ -5,14 +5,14 @@ import { images } from "@/constants";
 import FormField from "@/components/FormField";
 import CustomButton from "@/components/CustomButton";
 import { Link, router } from "expo-router";
-import { useGlobalContext } from "@/context/GlobalContextProvider";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import { register } from "@/lib/api";
+import { storeEmail } from "@/lib/secureStore";
+import { isValidEmail, isValidPassword } from "@/lib/validator";
 
 const Signup = () => {
-  const [form, setForm] = useState({ username: "", email: "", password: "" });
+  const [form, setForm] = useState({ name: "", email: "", password: "", passwordConfirmation: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { setUser, setIsLoggedIn } = useGlobalContext();
 
   const handleTextChange = (params) => {
     setForm((prevState) => {
@@ -20,18 +20,34 @@ const Signup = () => {
     });
   };
 
-  const handlSignUp = async () => {
-    if (!form.email || !form.username || !form.password) {
-      return Alert.alert("Error", "Please fill in all the fields.");
+  const handleSignUp = async () => {
+    const name = form.name.trim();
+    const email = form.email.trim();
+    const password = form.password.trim();
+    const passwordConfirmation = form.passwordConfirmation.trim();
+
+    let errorMessage = null;
+    if (!email || !name || !password || !passwordConfirmation) {
+      errorMessage = "Please fill in all the fields.";
+    } else if (!isValidEmail(email)) {
+      errorMessage = "Please enter a valid email address.";
+    } else if (!isValidPassword(password)) {
+      errorMessage = "Please enter a valid password.";
+    } else if (password !== passwordConfirmation) {
+      errorMessage = "Passwords do not match. Please fix.";
+    }
+
+    if (errorMessage) {
+      return Alert.alert("Error", errorMessage);
     }
 
     setIsSubmitting(true);
 
     try {
-      const user = await register(form.email, form.password, form.username);
-      setUser(user);
-      setIsLoggedIn(true);
-      router.push("/home");
+      const { message } = await register(name, email, password, passwordConfirmation);
+      storeEmail(form.email);
+      Alert.alert("Success", message);
+      router.push("/confirm");
     } catch (error) {
       Alert.alert("Error", error.message);
       console.error(error);
@@ -49,10 +65,10 @@ const Signup = () => {
           <Text className="text-2xl text-white font-psemibold">Sign up to Aora</Text>
 
           <FormField
-            title="Username"
-            placeholder="Username"
-            value={form.username}
-            handleChangeText={(value) => handleTextChange({ username: value })}
+            title="Name"
+            placeholder="Your full name"
+            value={form.name}
+            handleChangeText={(value) => handleTextChange({ name: value })}
             otherStyles="mt-10"
           />
 
@@ -72,10 +88,18 @@ const Signup = () => {
             value={form.password}
             handleChangeText={(value) => handleTextChange({ password: value })}
             otherStyles="mt-7"
-            keyboardType="email-address"
           />
 
-          <CustomButton title="Sign Up" handlePress={handlSignUp} containerStyles="mt-7" isLoading={isSubmitting} />
+          <FormField
+            title="Password Confirmation"
+            placeholder="Retype your password"
+            isPassword
+            value={form.passwordConfirmation}
+            handleChangeText={(value) => handleTextChange({ passwordConfirmation: value })}
+            otherStyles="mt-7"
+          />
+
+          <CustomButton title="Sign Up" handlePress={handleSignUp} containerStyles="mt-7" isLoading={isSubmitting} />
 
           <View className="justify-center pt-7 gap-2 flex-row">
             <Text className="text-lg font-pregular text-gray-100">Have an account already?</Text>

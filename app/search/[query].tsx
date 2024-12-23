@@ -38,7 +38,7 @@ const Search = () => {
     <SafeAreaView className="bg-primary h-full w-full">
       <FlatList
         data={videos}
-        keyExtractor={(item) => item.$id.toString()}
+        keyExtractor={(item) => item.id}
         renderItem={({ item }) => <VideoCard showMenu video={item} onToggleMenu={setCurrentPostId} />}
         ListHeaderComponent={() => (
           <View className="my-6 px-4">

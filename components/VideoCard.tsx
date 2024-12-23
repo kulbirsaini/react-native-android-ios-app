@@ -7,11 +7,11 @@ import { useGlobalContext } from "@/context/GlobalContextProvider";
 
 const VideoCard = ({
   video: {
-    $id,
+    id,
     title,
-    thumbnail,
-    video,
-    creator: { username, avatar },
+    thumbnailUrl,
+    videoUrl,
+    user: { name, avatar },
   },
   showMenu = false,
   onToggleMenu = (id: string) => {},
@@ -20,7 +20,7 @@ const VideoCard = ({
   const [play, setPlay] = useState(false);
 
   const onVideoPlay = () => {
-    setCurrentlyPlayingVideoId($id);
+    setCurrentlyPlayingVideoId(id);
     setPlay(true);
   };
 
@@ -42,13 +42,13 @@ const VideoCard = ({
                 {title}
               </Text>
               <Text className="text-xs text-gray-100 font-pregular" numberOfLines={1}>
-                {username}
+                {name}
               </Text>
             </View>
           </View>
           {showMenu && (
             <View className="py-2 pr-2 flex items-end">
-              <TouchableOpacity activeOpacity={0.7} onPress={() => onToggleMenu($id)} className="pl-8">
+              <TouchableOpacity activeOpacity={0.7} onPress={() => onToggleMenu(id)} className="pl-8">
                 <Image source={icons.menu} resizeMode="contain" className="w-5 h-5" />
               </TouchableOpacity>
             </View>
@@ -56,14 +56,14 @@ const VideoCard = ({
         </View>
 
         {play ? (
-          <VideoScreen id={$id} videoSource={video} onPlayToEnd={onVideoEnd} playerStyles="w-full h-60 rounded-xl mt-3" />
+          <VideoScreen id={id} videoSource={videoUrl} onPlayToEnd={onVideoEnd} playerStyles="w-full h-60 rounded-xl mt-3" />
         ) : (
           <TouchableOpacity
             className="w-full h-60 rounded-xl mt-3 relative justify-center items-center"
             activeOpacity={0.7}
             onPress={onVideoPlay}
           >
-            <Image source={{ uri: thumbnail }} className="w-full h-full rounded-xl mt-3" resizeMode="cover" />
+            <Image source={{ uri: thumbnailUrl }} className="w-full h-full rounded-xl mt-3" resizeMode="cover" />
             <Image source={icons.play} className="w-12 h-12 absolute" resizeMode="contain" />
           </TouchableOpacity>
         )}

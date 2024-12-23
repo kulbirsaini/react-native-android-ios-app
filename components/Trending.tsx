@@ -21,7 +21,7 @@ const TrendingItem = ({ activeItemId, item }) => {
   const [play, setPlay] = useState(false);
 
   const onVideoPlay = () => {
-    setCurrentlyPlayingVideoId(item.$id);
+    setCurrentlyPlayingVideoId(item.id);
     setPlay(true);
   };
 
@@ -31,18 +31,18 @@ const TrendingItem = ({ activeItemId, item }) => {
   };
 
   return (
-    <Animatable.View className="mr-5" animation={activeItemId === item.$id ? zoomIn : zoomOut} duration={500}>
+    <Animatable.View className="mr-5" animation={activeItemId === item.id ? zoomIn : zoomOut} duration={500}>
       {play ? (
         <VideoScreen
-          id={item.$id}
-          videoSource={item.video}
+          id={item.id}
+          videoSource={item.videoUrl}
           onPlayToEnd={onVideoEnd}
           playerStyles="w-52 h-72 rounded-[35px] mt-3 bg-white/10"
         />
       ) : (
         <TouchableOpacity className="relative justify-center items-center" activeOpacity={0.7} onPress={onVideoPlay}>
           <ImageBackground
-            source={{ uri: item.thumbnail }}
+            source={{ uri: item.thumbnailUrl }}
             className="w-52 h-72 rounded-[35px] my-5 overflow-hidden shadow-lg shadow-black/40"
             resizeMode="cover"
           />
@@ -66,7 +66,7 @@ const Trending = ({ posts }) => {
     <FlatList
       horizontal
       data={posts}
-      keyExtractor={(item) => item.$id}
+      keyExtractor={(item) => item.id}
       renderItem={({ item }) => <TrendingItem activeItemId={activeItemId} item={item} />}
       ListEmptyComponent={() => <EmptyState title="No Videos Found!" subtitle="Be the first one to upload a video!" />}
       onViewableItemsChanged={viewableItemsChanged}

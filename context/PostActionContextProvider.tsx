@@ -25,7 +25,7 @@ export const PostActionContextProvider = ({ children }) => {
       const result = await likePost(state.currentPostId);
       if (result) {
         setUser((prevUser) => {
-          return { ...prevUser, savedVideos: [...result.savedVideos] };
+          return { ...prevUser, likedPosts: [...result.likedPosts] };
         });
       }
     } finally {
@@ -40,7 +40,7 @@ export const PostActionContextProvider = ({ children }) => {
       const result = await unlikePost(state.currentPostId);
       if (result) {
         setUser((prevUser) => {
-          return { ...prevUser, savedVideos: [...result.savedVideos] };
+          return { ...prevUser, likedPosts: [...result.likedPosts] };
         });
       }
     } finally {
