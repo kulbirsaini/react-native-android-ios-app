@@ -49,7 +49,7 @@ const Confirm = () => {
       {isSubmitting && <LoadingIndicator />}
       <ScrollView>
         <View className="w-full h-full justify-center px-4 my-6">
-          <Image source={images.logo} resizeMode="contain" className="w-[115px] h-[35px]" />
+          <Image source={images.logo} resizeMode="contain" className="w-[176px] h-[48px]" />
           <Text className="text-2xl text-white font-psemibold">Confirm your account</Text>
 
           <FormField

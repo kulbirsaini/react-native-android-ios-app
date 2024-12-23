@@ -26,8 +26,6 @@ const Home = () => {
     setRefreshing(false);
   };
 
-  console.log(latestVideos[0]);
-
   if (error) {
     Alert.alert("Error", error.message);
   }
@@ -51,18 +49,16 @@ const Home = () => {
             renderItem={({ item }) => <VideoCard video={item} showMenu onToggleMenu={setCurrentPostId} />}
             ListHeaderComponent={() => (
               <View className="my-6 px-4 space-y-6">
-                <View className="justify-between items-start flex-row mb-6">
+                <View className="justify-between items-center flex-row mb-6">
                   <View>
                     <Text className="font-pmedium text-sm text-gray-100">Welcome Back!</Text>
                     <Text className="text-2xl font-psemibold text-white">{user?.name}!</Text>
                   </View>
 
-                  <View className="mt-1.5">
-                    <Image source={images.logoSmall} resizeMode="contain" className="w-9 h-10" />
-                  </View>
+                  <Image source={images.logoSmall} resizeMode="contain" className="w-10 h-10" />
                 </View>
 
-                <SearchInput placeholder="Search for a video topic" onSearch={onSearch} />
+                <SearchInput placeholder="Search for a topic" onSearch={onSearch} />
 
                 <View className="w-full flex-1 pt-5 pb-8">
                   <Text className="text-gray-100 text-lg font-pregular mb-3">Latest Videos</Text>
@@ -70,7 +66,7 @@ const Home = () => {
                 </View>
               </View>
             )}
-            ListEmptyComponent={() => <EmptyState title="No Videos Found!" subtitle="Be the first one to upload a video!" />}
+            ListEmptyComponent={() => <EmptyState title="No posts found!" subtitle="Be the first one to create a post!" />}
             refreshControl={<RefreshControl refreshing={false} onRefresh={onRefresh} />}
           />
         ),

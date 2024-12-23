@@ -9,12 +9,12 @@ import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import { createPost } from "@/lib/api";
+import { validateImage, validateVideo } from "@/lib/validator";
 
 const DEFAULT_FORM_STATE = {
   title: "",
   video: null,
   thumbnail: null,
-  prompt: "",
 };
 
 const Create = () => {
@@ -37,8 +37,29 @@ const Create = () => {
   };
 
   const submit = async () => {
-    if (!form.title || !form.video || !form.thumbnail || !form.prompt) {
-      return Alert.alert("Error", "Please fill in all fields.");
+    let errorMessage = null;
+    const title = form.title.trim();
+    const video = form.video;
+    const thumbnail = form.thumbnail;
+
+    if (!title && !video && !thumbnail) {
+      errorMessage = "Please fill in all fields.";
+    } else if (title.length < 4) {
+      errorMessage = "Title must be at least 4 characters long.";
+    } else {
+      const { valid: isVideoValid, message: videoErrorMessage } = validateVideo(video);
+      if (!isVideoValid) {
+        errorMessage = videoErrorMessage;
+      } else {
+        const { valid: isImageValid, message: imageErrorMessage } = validateImage(thumbnail);
+        if (!isImageValid) {
+          errorMessage = imageErrorMessage;
+        }
+      }
+    }
+
+    if (errorMessage) {
+      return Alert.alert("Error", errorMessage);
     }
 
     setUploading(true);
@@ -60,12 +81,12 @@ const Create = () => {
     <SafeAreaView className="bg-primary h-full w-full">
       {uploading && <LoadingIndicator />}
       <ScrollView className="px-4 my-6">
-        <Text className="text-xl text-white font-psemibold">Upload Video</Text>
+        <Text className="text-xl text-white font-psemibold">Create New Post</Text>
 
         <FormField
-          title="Video Title"
+          title="Title"
           value={form.title}
-          placeholder="Give your videos a catchy title..."
+          placeholder="Give your post a catchy title..."
           handleChangeText={(v) => setForm((f) => ({ ...f, title: v }))}
           otherStyles="mt-10"
         />
@@ -105,14 +126,6 @@ const Create = () => {
             )}
           </TouchableOpacity>
         </View>
-
-        <FormField
-          title="Prompt"
-          value={form.prompt}
-          placeholder="The prompt you used to create this video"
-          handleChangeText={(v) => setForm((f) => ({ ...f, prompt: v }))}
-          otherStyles="mt-7"
-        />
 
         <CustomButton title="Submit & Publish" handlePress={submit} containerStyles="mt-7" isLoading={uploading} />
       </ScrollView>

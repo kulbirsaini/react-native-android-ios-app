@@ -177,32 +177,24 @@ export const unlikePost = async (postId: string) => {
   return data;
 };
 
-export const createPost = async ({ title, prompt, video, thumbnail }) => {
+export const createPost = async ({ title, video, thumbnail }) => {
   const token = await getAuthToken();
   if (!token) {
     return { user: null };
   }
 
-  const body = new FormData();
-  body.append("title", title);
-  body.append("prompt", prompt);
-  body.append("video", {
-    uri: video.uri,
-    name: video.fileName,
-    type: video.mimeType,
-  });
-  body.append("thumbnail", {
-    uri: thumbnail.uri,
-    name: thumbnail.fileName,
-    type: thumbnail.mimeType,
-  });
+  const formData = new FormData();
+  formData.append("title", title);
+  formData.append("video", { uri: video.uri, name: video.fileName, type: video.mimeType });
+  formData.append("thumbnail", { uri: thumbnail.uri, name: thumbnail.fileName, type: thumbnail.mimeType });
 
   const response = await fetch(getUrl("/posts"), {
     method: "POST",
-    body: body,
+    body: formData,
     headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data", Accept: "application/json" },
   });
   const data = await response.json();
+
   if (!response.ok) {
     throw new Error(data.message);
   }

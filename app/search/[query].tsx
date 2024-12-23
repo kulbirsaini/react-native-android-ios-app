@@ -42,7 +42,7 @@ const Search = () => {
         renderItem={({ item }) => <VideoCard showMenu video={item} onToggleMenu={setCurrentPostId} />}
         ListHeaderComponent={() => (
           <View className="my-6 px-4">
-            <View className="justify-between items-start flex-row mb-4">
+            <View className="justify-between items-center flex-row mb-4">
               <View className="flex-row gap-2 items-center">
                 <TouchableOpacity activeOpacity={0.7} onPress={() => router.push("/home")} className="p-4">
                   <Image source={icons.leftArrow} resizeMode="contain" className="w-5 h-5" />
@@ -53,19 +53,19 @@ const Search = () => {
                 </View>
               </View>
 
-              <View className="">
-                <Image source={images.logoSmall} resizeMode="contain" className="w-9 h-10" />
-              </View>
+              <Image source={images.logoSmall} resizeMode="contain" className="w-10 h-10" />
             </View>
 
             <View className="mt-6 mb-8">
-              <SearchInput placeholder="Search for a video topic" initialQuery={query as string} onSearch={onSearch} />
+              <SearchInput placeholder="Search for a topic" initialQuery={query as string} onSearch={onSearch} />
             </View>
           </View>
         )}
         ListEmptyComponent={() => (
           <>
-            {!isLoading && <EmptyState title="No videos found for this query!" subtitle="Be the first one to upload a video!" />}
+            {!isLoading && (
+              <EmptyState title="No post found for this query!" subtitle="Be the first one to create a post on this topic!" />
+            )}
           </>
         )}
       />

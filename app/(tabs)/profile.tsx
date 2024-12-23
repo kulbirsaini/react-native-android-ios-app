@@ -41,7 +41,6 @@ const Profile = () => {
     setIsSigningOut(true);
 
     try {
-      console.log("logging out");
       await logout();
       storeAuthToken("");
       setUser(null);
@@ -82,7 +81,7 @@ const Profile = () => {
               </View>
             )}
             ListEmptyComponent={() => (
-              <>{!isLoading && <EmptyState title="No videos found!" subtitle="Be the first one to upload a video!" />}</>
+              <>{!isLoading && <EmptyState title="No posts found!" subtitle="Be the first one to create a post!" />}</>
             )}
             refreshControl={<RefreshControl refreshing={false} onRefresh={onRefresh} />}
           />

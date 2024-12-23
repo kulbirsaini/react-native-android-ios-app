@@ -19,18 +19,18 @@ const Main = () => {
       <ScrollView contentContainerStyle={{ height: "100%" }}>
         {isLoading && <LoadingIndicator />}
         <View className="w-full h-full justify-center items-center px-4">
-          <Image source={images.logo} className="w-[130px] h-[84px]" resizeMode="contain" />
+          <Image source={images.logo} className="w-[256px] h-[96px]" resizeMode="contain" />
           <Image source={images.cards} className="max-w-[380px] w-full h-[300px]" resizeMode="contain" />
 
           <View className="relative mt-5">
             <Text className="text-3xl text-center text-white font-bold">
-              Discover Endless Possibilities with <Text className="text-secondary-200">Aora</Text>
+              Discover Endless Possibilities with <Text className="text-secondary-200">RocketMoon</Text>
             </Text>
-            <Image source={images.path} className="w-[136px] h-[15px] absolute -bottom-2 right-20" resizeMode="contain" />
+            <Image source={images.path} className="w-[126px] h-[13px] absolute -bottom-2 right-20" resizeMode="contain" />
           </View>
 
           <Text className="text-sm font-pregular text-gray-100 mt-7 text-center">
-            Where creativity meets innovation: Embark on a journey of limitless exploration with Aora
+            Where creativity meets innovation: Embark on a journey of limitless exploration with RocketMoon!
           </Text>
 
           <CustomButton

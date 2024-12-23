@@ -49,17 +49,17 @@ const Bookmark = () => {
             renderItem={({ item }) => <VideoCard showMenu video={item} onToggleMenu={setCurrentPostId} />}
             ListHeaderComponent={
               <View className="px-4 my-6 space-y-6">
-                <View className="justify-between items-start flex-row mb-6">
-                  <Text className="text-white text-3xl font-pmedium">Saved Videos</Text>
-                  <Image source={images.logoSmall} resizeMode="contain" className="w-9 h-10" />
+                <View className="justify-between items-center flex-row mb-6">
+                  <Text className="text-white text-3xl font-pmedium">Liked Videos</Text>
+                  <Image source={images.logoSmall} resizeMode="contain" className="w-10 h-10" />
                 </View>
 
-                <SearchInput placeholder="Search your saved videos" onSearch={onSearch} onSearchReset={() => setQuery("")} />
+                <SearchInput placeholder="Search your liked posts" onSearch={onSearch} onSearchReset={() => setQuery("")} />
               </View>
             }
             ListEmptyComponent={() => (
               <>
-                {!isLoading && <EmptyState title="No videos found!" subtitle="Adjust your search query to get some results." />}
+                {!isLoading && <EmptyState title="No posts found!" subtitle="Adjust your search query to get some results." />}
               </>
             )}
             refreshControl={<RefreshControl refreshing={false} onRefresh={onRefresh} />}

@@ -1,6 +1,7 @@
-import { Tabs } from "expo-router";
 import { Image, Text, View } from "react-native";
 import { icons } from "@/constants";
+import { Tabs } from "expo-router";
+import { useGlobalContext } from "@/context/GlobalContextProvider";
 
 const TabIcon = ({ icon, color, name, focused }) => {
   return (
@@ -14,8 +15,13 @@ const TabIcon = ({ icon, color, name, focused }) => {
 };
 
 export default function TabLayout() {
+  const { setCurrentlyPlayingVideoId } = useGlobalContext();
+
   return (
     <Tabs
+      screenListeners={{
+        blur: () => setCurrentlyPlayingVideoId(null),
+      }}
       screenOptions={{
         tabBarShowLabel: false,
         tabBarActiveTintColor: "#FFA001",
@@ -53,11 +59,11 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="saved"
+        name="liked"
         options={{
-          title: "Saved",
+          title: "Liked",
           headerShown: false,
-          tabBarIcon: ({ color, focused }) => <TabIcon icon={icons.bookmark} color={color} name="Saved" focused={focused} />,
+          tabBarIcon: ({ color, focused }) => <TabIcon icon={icons.bookmark} color={color} name="Liked" focused={focused} />,
         }}
       />
     </Tabs>

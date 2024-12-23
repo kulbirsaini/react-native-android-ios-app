@@ -68,7 +68,7 @@ const Trending = ({ posts }) => {
       data={posts}
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => <TrendingItem activeItemId={activeItemId} item={item} />}
-      ListEmptyComponent={() => <EmptyState title="No Videos Found!" subtitle="Be the first one to upload a video!" />}
+      ListEmptyComponent={() => <EmptyState title="No posts found!" subtitle="Be the first one to create a post!" />}
       onViewableItemsChanged={viewableItemsChanged}
       viewabilityConfig={{
         itemVisiblePercentThreshold: 70,

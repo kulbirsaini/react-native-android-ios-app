@@ -27,7 +27,7 @@ const Signup = () => {
     const passwordConfirmation = form.passwordConfirmation.trim();
 
     let errorMessage = null;
-    if (!email || !name || !password || !passwordConfirmation) {
+    if (!email && !name && !password && !passwordConfirmation) {
       errorMessage = "Please fill in all the fields.";
     } else if (!isValidEmail(email)) {
       errorMessage = "Please enter a valid email address.";
@@ -61,8 +61,8 @@ const Signup = () => {
       {isSubmitting && <LoadingIndicator />}
       <ScrollView>
         <View className="w-full h-full justify-center px-4 my-6">
-          <Image source={images.logo} resizeMode="contain" className="w-[115px] h-[35px]" />
-          <Text className="text-2xl text-white font-psemibold">Sign up to Aora</Text>
+          <Image source={images.logo} resizeMode="contain" className="w-[176px] h-[48px]" />
+          <Text className="text-2xl text-white font-psemibold">Sign up to RocketMoon</Text>
 
           <FormField
             title="Name"
