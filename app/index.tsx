@@ -11,7 +11,7 @@ const Main = () => {
   const { isLoggedIn, isLoading } = useGlobalContext();
 
   if (!isLoading && isLoggedIn) {
-    return <Redirect href="/home" />;
+    return <Redirect href="/profile" />;
   }
 
   return (

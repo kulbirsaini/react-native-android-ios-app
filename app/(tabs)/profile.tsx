@@ -4,7 +4,6 @@ import LoadingIndicator from "@/components/LoadingIndicator";
 import VideoCard from "@/components/VideoCard";
 import { icons } from "@/constants";
 import { useGlobalContext } from "@/context/GlobalContextProvider";
-import useApi from "@/hooks/useApi";
 import { router } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { View, Image, FlatList, TouchableOpacity } from "react-native";
@@ -14,24 +13,30 @@ import { usePostActionContext } from "@/context/PostActionContextProvider";
 import { getUserPosts, logout } from "@/lib/api";
 import { RefreshControl } from "react-native-gesture-handler";
 import { storeAuthToken } from "@/lib/secureStore";
+import { usePagination } from "@/hooks/usePagination";
 
 const Profile = () => {
   const { user, setUser, setIsLoggedIn } = useGlobalContext();
   const { setCurrentPostId, isProcessing } = usePostActionContext();
   const [refreshing, setRefreshing] = useState(false);
-  const userPostsFn = useCallback(() => getUserPosts(user?.id?.toString()), [user?.id]);
-  const { data: videos, isLoading, error, refresh } = useApi(userPostsFn, []);
+  const userPostsFn = useCallback((params) => getUserPosts({ ...params, userId: user?.id?.toString() }), [user?.id]);
+  const { resources: posts, isLoading, error, refresh, getNextPage } = usePagination(userPostsFn, { dataKey: "posts" });
   const [isSigningOut, setIsSigningOut] = useState(false);
 
+  // In case use logs out and logs in as another user
   useEffect(() => {
     refresh();
   }, [user?.id]);
 
   if (error) {
-    console.error(user, videos, isLoading, error);
+    console.error(user, posts.length, isLoading, error.message);
   }
 
   const onRefresh = async () => {
+    if (isLoading) {
+      return;
+    }
+
     setRefreshing(true);
     await refresh();
     setRefreshing(false);
@@ -59,9 +64,11 @@ const Profile = () => {
       {useMemo(
         () => (
           <FlatList
-            data={videos}
+            data={posts}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => <VideoCard showMenu video={item} onToggleMenu={setCurrentPostId} />}
+            onEndReachedThreshold={0}
+            onEndReached={getNextPage}
             ListHeaderComponent={() => (
               <View className="w-full justify-center items-center mt-6 mb-12 px-4">
                 <TouchableOpacity className="w-full items-end mb-10" onPress={onLogout}>
@@ -75,7 +82,7 @@ const Profile = () => {
                 <InfoBox title={user?.name} containerStyles="mt-5" titleStyles="text-lg" />
 
                 <View className="mt-5 flex-row">
-                  <InfoBox title={videos?.length} subtitle="Posts" containerStyles="mr-10" titleStyles="text-xl" />
+                  <InfoBox title={posts?.length} subtitle="Posts" containerStyles="mr-10" titleStyles="text-xl" />
                   <InfoBox title="1.2k" subtitle="Followers" titleStyles="text-xl" />
                 </View>
               </View>
@@ -86,7 +93,7 @@ const Profile = () => {
             refreshControl={<RefreshControl refreshing={false} onRefresh={onRefresh} />}
           />
         ),
-        [videos]
+        [posts]
       )}
     </SafeAreaView>
   );

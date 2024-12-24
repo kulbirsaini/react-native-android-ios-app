@@ -7,9 +7,10 @@ import { images } from "@/constants";
 import { useGlobalContext } from "@/context/GlobalContextProvider";
 import { usePostActionContext } from "@/context/PostActionContextProvider";
 import useApi from "@/hooks/useApi";
+import { usePagination } from "@/hooks/usePagination";
 import { getAllPosts, getLatestPosts } from "@/lib/api";
 import { router } from "expo-router";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { View, Text, FlatList, Image, RefreshControl, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -17,46 +18,17 @@ const Home = () => {
   const { user } = useGlobalContext();
   const { setCurrentPostId, isProcessing } = usePostActionContext();
   const [refreshing, setRefreshing] = useState(false);
-  //TODO: Extract pagination to a hook
-  const [currentPage, setCurrentPage] = useState(0);
-  const [hasMorePages, setHasMorePages] = useState(true);
-  const [allPosts, setAllPosts] = useState([]);
-  const getPagedPosts = useCallback(() => getAllPosts({ page: currentPage }), [currentPage]);
-  const {
-    data: { posts, page },
-    isLoading,
-    error,
-    refresh,
-  } = useApi(getPagedPosts, []);
+  const { resources: posts, isLoading, error, refresh, getNextPage } = usePagination(getAllPosts, { dataKey: "posts" });
   const {
     data: { posts: latestPosts },
     isLoading: isLoadingLatestPosts,
-  } = useApi(getLatestPosts, []);
+  } = useApi(getLatestPosts, {});
 
-  useEffect(() => {
-    if (!posts) {
+  const onRefresh = async () => {
+    if (isLoading) {
       return;
     }
 
-    setAllPosts((prevPosts) => {
-      const newPosts = [...prevPosts];
-      const seenPostIds = newPosts.map((post) => post.id);
-
-      posts.forEach((post) => {
-        if (!seenPostIds.includes(post.id)) {
-          newPosts.push(post);
-        }
-      });
-
-      return newPosts;
-    });
-
-    if (posts.length < 10) {
-      setHasMorePages(false);
-    }
-  }, [posts]);
-
-  const onRefresh = async () => {
     setRefreshing(true);
     await refresh();
     setRefreshing(false);
@@ -80,13 +52,13 @@ const Home = () => {
       {useMemo(
         () => (
           <FlatList
-            data={allPosts}
+            data={posts}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => <VideoCard video={item} showMenu onToggleMenu={setCurrentPostId} />}
             ListEmptyComponent={() => <EmptyState title="No posts found!" subtitle="Be the first one to create a post!" />}
             refreshControl={<RefreshControl refreshing={false} onRefresh={onRefresh} />}
             onEndReachedThreshold={0}
-            onEndReached={() => hasMorePages && setCurrentPage(page + 1)}
+            onEndReached={getNextPage}
             ListHeaderComponent={() => (
               <View className="my-6 px-4 space-y-6">
                 <View className="justify-between items-center flex-row mb-6">
@@ -108,7 +80,7 @@ const Home = () => {
             )}
           />
         ),
-        [allPosts, latestPosts]
+        [posts, latestPosts]
       )}
     </SafeAreaView>
   );

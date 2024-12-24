@@ -5,9 +5,9 @@ import { View, TextInput, TouchableOpacity, Image, Alert } from "react-native";
 const SearchInput = ({ placeholder, initialQuery = "", otherStyles = "", onSearch, onSearchReset = () => {}, ...props }) => {
   const [query, setQuery] = useState(initialQuery);
 
-  const handleTextChange = (value) => {
+  const handleTextChange = (value: string) => {
     setQuery(value);
-    
+
     if (!value.trim() && query) {
       onSearchReset();
     }

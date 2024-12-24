@@ -91,7 +91,7 @@ export const confirmViaOtp = async (email: string, otp: string) => {
 };
 
 export const logout = async () => {
-  const token = await getAuthToken();
+  const token = getAuthToken();
   if (!token) {
     return { user: null };
   }
@@ -107,7 +107,7 @@ export const logout = async () => {
 };
 
 export const getCurrentUser = async () => {
-  const token = await getAuthToken();
+  const token = getAuthToken();
   if (!token) {
     return { user: null };
   }
@@ -127,13 +127,17 @@ export const getCurrentUser = async () => {
 };
 
 export const getAllPosts = async (params: PostQueryParams) => {
-  const token = await getAuthToken();
+  const token = getAuthToken();
   if (!token) {
     return { user: null };
   }
 
   const response = await createGetRequest("/posts", params, { authToken: token });
   const data = await response.json();
+
+  if (response.status === 429) {
+    throw new Error("We have made too many requests to the API. Please slow down.");
+  }
 
   if (!response.ok) {
     throw new Error(data.message);
@@ -143,12 +147,11 @@ export const getAllPosts = async (params: PostQueryParams) => {
 };
 
 export const getLatestPosts = () => getAllPosts({ latest: true, limit: 5 });
-export const searchPosts = (query: string) => getAllPosts({ search: query });
-export const searchLikedPosts = (query: string) => getAllPosts({ search: query, scope: "liked" });
-export const getUserPosts = (userId: string) => getAllPosts({ userId, scope: "user" });
+export const searchLikedPosts = (params: PostQueryParams) => getAllPosts({ ...params, scope: "liked" });
+export const getUserPosts = (params: PostQueryParams) => getAllPosts({ ...params, scope: "user" });
 
 export const likePost = async (postId: string) => {
-  const token = await getAuthToken();
+  const token = getAuthToken();
   if (!token) {
     return { user: null };
   }
@@ -164,7 +167,7 @@ export const likePost = async (postId: string) => {
 };
 
 export const unlikePost = async (postId: string) => {
-  const token = await getAuthToken();
+  const token = getAuthToken();
   if (!token) {
     return { user: null };
   }
@@ -180,7 +183,7 @@ export const unlikePost = async (postId: string) => {
 };
 
 export const createPost = async ({ title, video, thumbnail }) => {
-  const token = await getAuthToken();
+  const token = getAuthToken();
   if (!token) {
     return { user: null };
   }

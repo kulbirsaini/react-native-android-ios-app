@@ -3,27 +3,28 @@ import LoadingIndicator from "@/components/LoadingIndicator";
 import SearchInput from "@/components/SearchInput";
 import VideoCard from "@/components/VideoCard";
 import { icons, images } from "@/constants";
-import useApi from "@/hooks/useApi";
 import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect } from "react";
 import { View, Text, Image, FlatList, Alert, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import React from "react";
-import { searchPosts } from "@/lib/api";
 import { usePostActionContext } from "@/context/PostActionContextProvider";
+import { getAllPosts } from "@/lib/api";
+import { usePagination } from "@/hooks/usePagination";
 
 const Search = () => {
   const { query } = useLocalSearchParams();
   const { setCurrentPostId, isProcessing } = usePostActionContext();
-  const searchFn = useCallback(() => searchPosts(query as string), [query]);
-  const { data: videos, isLoading, error, refresh } = useApi(searchFn, []);
+  const searchFn = useCallback((params) => getAllPosts({ ...params, search: query as string }), [query as string]);
+  const { resources: posts, isLoading, error, refresh, getNextPage } = usePagination(searchFn, { dataKey: "posts" });
 
   useEffect(() => {
     refresh();
-  }, [query]);
+  }, [query as string]);
 
   if (error) {
-    console.error(videos, isLoading, error);
+    console.error(posts?.length, isLoading, error.message);
+    return Alert.alert("Error", error.message);
   }
 
   const onSearch = (query: string) => {
@@ -37,9 +38,11 @@ const Search = () => {
   return (
     <SafeAreaView className="bg-primary h-full w-full">
       <FlatList
-        data={videos}
+        data={posts}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => <VideoCard showMenu video={item} onToggleMenu={setCurrentPostId} />}
+        onEndReachedThreshold={0}
+        onEndReached={getNextPage}
         ListHeaderComponent={() => (
           <View className="my-6 px-4">
             <View className="justify-between items-center flex-row mb-4">
