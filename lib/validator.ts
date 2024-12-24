@@ -5,7 +5,7 @@ const VIDEO_ERRORS = {
   MISSING_FILE: "Please select a video file.",
   INVALID_FILE_TYPE: "Please select a valid video file.",
   VIDEO_TOO_LONG: "Video must not exceed 60 seconds in size.",
-  VIDEO_TOO_LARGE: "Video must not exceed 10 MB in size.",
+  VIDEO_TOO_LARGE: "Video must not exceed 25 MB in size.",
 };
 const IMAGE_ERRORS = {
   MISSING_FILE: "Please select an image.",

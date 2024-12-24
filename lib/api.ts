@@ -5,6 +5,8 @@ interface PostQueryParams {
   search?: string;
   scope?: string;
   userId?: string;
+  limit?: Number;
+  page?: Number;
 }
 
 const getUrl = (endpoint: string, params = {}) => {
@@ -137,10 +139,10 @@ export const getAllPosts = async (params: PostQueryParams) => {
     throw new Error(data.message);
   }
 
-  return data.posts;
+  return data;
 };
 
-export const getLatestPosts = () => getAllPosts({ latest: true });
+export const getLatestPosts = () => getAllPosts({ latest: true, limit: 5 });
 export const searchPosts = (query: string) => getAllPosts({ search: query });
 export const searchLikedPosts = (query: string) => getAllPosts({ search: query, scope: "liked" });
 export const getUserPosts = (userId: string) => getAllPosts({ userId, scope: "user" });

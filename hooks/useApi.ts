@@ -12,7 +12,8 @@ const useApi = (fn, defaultValue) => {
   };
 
   const refresh = async () => {
-    reset();
+    setIsLoading(false);
+    setError(null);
     await asyncFn();
   };
 

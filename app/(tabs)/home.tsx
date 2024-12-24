@@ -9,7 +9,7 @@ import { usePostActionContext } from "@/context/PostActionContextProvider";
 import useApi from "@/hooks/useApi";
 import { getAllPosts, getLatestPosts } from "@/lib/api";
 import { router } from "expo-router";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { View, Text, FlatList, Image, RefreshControl, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -17,8 +17,44 @@ const Home = () => {
   const { user } = useGlobalContext();
   const { setCurrentPostId, isProcessing } = usePostActionContext();
   const [refreshing, setRefreshing] = useState(false);
-  const { data: videos, isLoading, error, refresh } = useApi(getAllPosts, []);
-  const { data: latestVideos, isLoading: isLoadingLatestVideos } = useApi(getLatestPosts, []);
+  //TODO: Extract pagination to a hook
+  const [currentPage, setCurrentPage] = useState(0);
+  const [hasMorePages, setHasMorePages] = useState(true);
+  const [allPosts, setAllPosts] = useState([]);
+  const getPagedPosts = useCallback(() => getAllPosts({ page: currentPage }), [currentPage]);
+  const {
+    data: { posts, page },
+    isLoading,
+    error,
+    refresh,
+  } = useApi(getPagedPosts, []);
+  const {
+    data: { posts: latestPosts },
+    isLoading: isLoadingLatestPosts,
+  } = useApi(getLatestPosts, []);
+
+  useEffect(() => {
+    if (!posts) {
+      return;
+    }
+
+    setAllPosts((prevPosts) => {
+      const newPosts = [...prevPosts];
+      const seenPostIds = newPosts.map((post) => post.id);
+
+      posts.forEach((post) => {
+        if (!seenPostIds.includes(post.id)) {
+          newPosts.push(post);
+        }
+      });
+
+      return newPosts;
+    });
+
+    if (posts.length < 10) {
+      setHasMorePages(false);
+    }
+  }, [posts]);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -40,13 +76,17 @@ const Home = () => {
 
   return (
     <SafeAreaView className="bg-primary h-full relative">
-      {(isLoading || isProcessing || isLoadingLatestVideos || refreshing) && <LoadingIndicator />}
+      {(isLoading || isProcessing || isLoadingLatestPosts || refreshing) && <LoadingIndicator />}
       {useMemo(
         () => (
           <FlatList
-            data={videos}
+            data={allPosts}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => <VideoCard video={item} showMenu onToggleMenu={setCurrentPostId} />}
+            ListEmptyComponent={() => <EmptyState title="No posts found!" subtitle="Be the first one to create a post!" />}
+            refreshControl={<RefreshControl refreshing={false} onRefresh={onRefresh} />}
+            onEndReachedThreshold={0}
+            onEndReached={() => hasMorePages && setCurrentPage(page + 1)}
             ListHeaderComponent={() => (
               <View className="my-6 px-4 space-y-6">
                 <View className="justify-between items-center flex-row mb-6">
@@ -61,16 +101,14 @@ const Home = () => {
                 <SearchInput placeholder="Search for a topic" onSearch={onSearch} />
 
                 <View className="w-full flex-1 pt-5 pb-8">
-                  <Text className="text-gray-100 text-lg font-pregular mb-3">Latest Videos</Text>
-                  <Trending posts={latestVideos} />
+                  <Text className="text-gray-100 text-lg font-pregular mb-3">Latest Posts</Text>
+                  <Trending posts={latestPosts} />
                 </View>
               </View>
             )}
-            ListEmptyComponent={() => <EmptyState title="No posts found!" subtitle="Be the first one to create a post!" />}
-            refreshControl={<RefreshControl refreshing={false} onRefresh={onRefresh} />}
           />
         ),
-        [videos, latestVideos]
+        [allPosts, latestPosts]
       )}
     </SafeAreaView>
   );

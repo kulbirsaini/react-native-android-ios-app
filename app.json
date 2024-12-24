@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Sample App By RocketMoon",
-    "slug": "sample-rocketmoon",
+    "name": "RocketMoon Sample",
+    "slug": "rocketmoon-sample",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
